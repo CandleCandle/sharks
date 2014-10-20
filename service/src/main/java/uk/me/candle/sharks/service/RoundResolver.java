@@ -16,8 +16,11 @@ import uk.me.candle.sharks.api.RobotId;
 public class RoundResolver {
 
 
-	Map<Player, RobotId> playerRobots;
+	private final Map<Player, RobotId> playerRobots;
 
+	public RoundResolver(Map<Player, RobotId> playerRobots) {
+		this.playerRobots = playerRobots;
+	}
 
 	GameState round(GameState initial) {
 

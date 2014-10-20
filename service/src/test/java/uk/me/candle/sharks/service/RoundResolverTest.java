@@ -62,17 +62,22 @@ public class RoundResolverTest {
 	@Test
 	public void testSomeMethod() {
 		GameState initialState = new GameState.Builder()
-				.withRobots(initial.stream().map(Robot::new).collect(Collectors.toList()))
+				.withRobots(initial.stream()
+						.map(r -> new Robot.Builder().id(r)
+								.remainingCards(Card.values())
+								.remainingLimbs(Robot.Limbs.values())
+								.build()
+						)
+						.collect(Collectors.toList()))
 				.build();
 
 		for (int i = 0; i < players.size(); ++i) {
 			when(players.get(i).makeMove(initialState)).thenReturn(moveSelection.get(i));
 		}
 
-		RoundResolver undertest = new RoundResolver();
-
-		undertest.playerRobots = players.stream()
-				.collect(Collectors.toMap(e -> e, e -> forPlayer(e)));
+		RoundResolver undertest = new RoundResolver(players.stream()
+				.collect(Collectors.toMap(e -> e, e -> forPlayer(e)))
+		);
 
 		GameState resultState = undertest.round(initialState);
 

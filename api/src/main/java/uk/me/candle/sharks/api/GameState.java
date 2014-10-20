@@ -6,12 +6,15 @@ import java.util.List;
 
 public class GameState {
 
-	private List<Robot> robots;
+	private final List<Robot> robots;
 
 	private GameState(List<Robot> robots) {
 		this.robots = robots;
 	}
 
+	/**
+	 * @return a list of the robots in order, index 0 will be eaten first.
+	 */
 	public List<Robot> getRobots() {
 		return ImmutableList.copyOf(robots);
 	}
