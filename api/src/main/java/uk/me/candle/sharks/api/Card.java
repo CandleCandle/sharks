@@ -16,7 +16,7 @@ public enum Card {
 		}
 	}
 
-	public static Set<Card> cardsFor(int playerCount) {
-		return Sets.newHashSet(values());
+	public static Set<Card> cardsFor(int robotCount) {
+		return Sets.newHashSet(values()); // TODO find out the rules for the number of cards when there are fewer than 6 players.
 	}
 }

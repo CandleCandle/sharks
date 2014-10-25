@@ -10,12 +10,11 @@ public class Robot {
 
 	private final RobotId id;
 
-	private final Set<Limbs> remainingLimbs;
+	private final Set<Limb> remainingLimbs;
 	private final Set<Card> remainingCards;
 
-	public static enum Limbs { ARM_L, ARM_R, LEG_R, LEG_L; }
 
-	private Robot(RobotId id, Set<Limbs> limbs, Set<Card> cards) {
+	private Robot(RobotId id, Set<Limb> limbs, Set<Card> cards) {
 		this.id = id;
 		this.remainingLimbs = limbs;
 		this.remainingCards = cards;
@@ -25,7 +24,7 @@ public class Robot {
 		return id;
 	}
 
-	public Set<Limbs> getRemainingLimbs() {
+	public Set<Limb> getRemainingLimbs() {
 		return Sets.immutableEnumSet(remainingLimbs);
 	}
 
@@ -39,14 +38,14 @@ public class Robot {
 	}
 
 	public static class Builder {
-		private Set<Limbs> limbs = EnumSet.noneOf(Limbs.class);
+		private Set<Limb> limbs = EnumSet.noneOf(Limb.class);
 		private Set<Card> cards = EnumSet.noneOf(Card.class);
 		private RobotId id;
 
 		public Builder from(Robot robot) {
 			this.id = robot.getId();
 			this.cards = Sets.newEnumSet(robot.getRemainingCards(), Card.class);
-			this.limbs = Sets.newEnumSet(robot.getRemainingLimbs(), Limbs.class);
+			this.limbs = Sets.newEnumSet(robot.getRemainingLimbs(), Limb.class);
 			return this;
 		}
 
@@ -55,18 +54,18 @@ public class Robot {
 			return this;
 		}
 
-		public Builder remainingLimbs(Set<Limbs> limbs) {
-			this.limbs = Sets.newEnumSet(limbs, Limbs.class);
+		public Builder remainingLimbs(Set<Limb> limbs) {
+			this.limbs = Sets.newEnumSet(limbs, Limb.class);
 			return this;
 		}
 		
-		public Builder remainingLimbs(Limbs[] limbs) {
-			this.limbs = EnumSet.noneOf(Limbs.class);
+		public Builder remainingLimbs(Limb[] limbs) {
+			this.limbs = EnumSet.noneOf(Limb.class);
 			this.limbs.addAll(Arrays.asList(limbs));
 			return this;
 		}
 		
-		public Builder removeLimb(Limbs limb) {
+		public Builder removeLimb(Limb limb) {
 			limbs.remove(limb);
 			return this;
 		}

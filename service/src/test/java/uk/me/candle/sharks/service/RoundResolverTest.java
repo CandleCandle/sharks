@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.when;
 import uk.me.candle.sharks.api.Card;
 import uk.me.candle.sharks.api.GameState;
+import uk.me.candle.sharks.api.Limb;
 import uk.me.candle.sharks.api.Robot;
 import uk.me.candle.sharks.api.RobotId;
 
@@ -65,7 +66,7 @@ public class RoundResolverTest {
 				.withRobots(initial.stream()
 						.map(r -> new Robot.Builder().id(r)
 								.remainingCards(Card.values())
-								.remainingLimbs(Robot.Limbs.values())
+								.remainingLimbs(Limb.values())
 								.build()
 						)
 						.collect(Collectors.toList()))

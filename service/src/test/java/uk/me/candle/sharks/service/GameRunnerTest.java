@@ -15,8 +15,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnit44Runner;
 import uk.me.candle.sharks.api.GameState;
+import uk.me.candle.sharks.api.Limb;
 import uk.me.candle.sharks.api.Robot;
-import uk.me.candle.sharks.api.Robot.Limbs;
+import uk.me.candle.sharks.api.Limb;
 import uk.me.candle.sharks.api.RobotId;
 
 @RunWith(MockitoJUnit44Runner.class)
@@ -33,7 +34,7 @@ public class GameRunnerTest {
 		Robot winner = undertest.play();
 
 		assertThat(winner.getId(), is(new RobotId("a")));
-		Set<Robot.Limbs> limbs = EnumSet.allOf(Robot.Limbs.class);
+		Set<Limb> limbs = EnumSet.allOf(Limb.class);
 		assertThat(winner.getRemainingLimbs(), is(limbs));
 	}
 
@@ -42,8 +43,8 @@ public class GameRunnerTest {
 		List<RobotId> robotIds = ImmutableList.of(new RobotId("a"), new RobotId("b"));
 
 		List<Robot> finalState = ImmutableList.of(
-			new Robot.Builder().id(robotIds.get(0)).remainingLimbs(new Limbs[]{Limbs.ARM_L}).build(),
-			new Robot.Builder().id(robotIds.get(1)).remainingLimbs(new Limbs[]{Limbs.ARM_L, Robot.Limbs.ARM_R}).build()
+			new Robot.Builder().id(robotIds.get(0)).remainingLimbs(new Limb[]{Limb.ARM_L}).build(),
+			new Robot.Builder().id(robotIds.get(1)).remainingLimbs(new Limb[]{Limb.ARM_L, Limb.ARM_R}).build()
 		);
 		when(roundResolver.round(any(GameState.class)))
 				.thenReturn(
@@ -56,7 +57,7 @@ public class GameRunnerTest {
 
 		verify(roundResolver, times(1)).round(any(GameState.class));
 		assertThat(winner.getId(), is(new RobotId("b")));
-		assertThat(winner.getRemainingLimbs(), is(EnumSet.of(Limbs.ARM_L, Robot.Limbs.ARM_R)));
+		assertThat(winner.getRemainingLimbs(), is(EnumSet.of(Limb.ARM_L, Limb.ARM_R)));
 		
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import uk.me.candle.sharks.api.Card;
 import uk.me.candle.sharks.api.GameState;
+import uk.me.candle.sharks.api.Limb;
 import uk.me.candle.sharks.api.Robot;
 import uk.me.candle.sharks.api.RobotId;
 
@@ -22,7 +23,7 @@ public class GameRunner {
 		List<Robot> robots = robotIds.stream().map(
 			r -> new Robot.Builder()
 					.id(r)
-					.remainingLimbs(Robot.Limbs.values())
+					.remainingLimbs(Limb.values())
 					.remainingCards(Card.cardsFor(robotIds.size()))
 					.build()
 		).collect(Collectors.toList());
