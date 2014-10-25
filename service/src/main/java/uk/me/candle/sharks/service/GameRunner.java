@@ -37,6 +37,7 @@ public class GameRunner {
 			losingRobot = new Robot.Builder()
 					.from(losingRobot)
 					.removeLimb(losingRobot.getRemainingLimbs().iterator().next())
+					.remainingCards(Card.cardsFor(robotIds.size()))
 					.build();
 			if (!losingRobot.getRemainingLimbs().isEmpty()) {
 				resultingRobots.add(0, losingRobot);
