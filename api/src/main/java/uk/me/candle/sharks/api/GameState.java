@@ -19,6 +19,10 @@ public class GameState {
 		return ImmutableList.copyOf(robots);
 	}
 
+	public Robot findRobot(RobotId robotId) {
+		return robots.stream().filter(r -> r.getId().equals(robotId)).findFirst().get();
+	}
+
 	public static class Builder {
 		private List<Robot> robots;
 

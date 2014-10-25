@@ -4,9 +4,11 @@ import static com.google.common.collect.ImmutableList.of;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,44 +31,48 @@ public class RoundResolverTest {
 	@Parameterized.Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-			{ of(PL[0], PL[1]), of(Card.ONE, Card.TWO), of(ID[0], ID[1]), of(ID[0], ID[1]) },
-			{ of(PL[0], PL[1]), of(Card.TWO, Card.ONE), of(ID[0], ID[1]), of(ID[1], ID[0]) },
-			{ of(PL[0], PL[1]), of(Card.TWO, Card.TWO), of(ID[0], ID[1]), of(ID[0], ID[1]) },
-			{ of(PL[0], PL[1]), of(Card.TWO, Card.TWO), of(ID[1], ID[0]), of(ID[1], ID[0]) },
-			{
-					of(PL[0],	PL[1],	PL[2]),
-					of(Card.TWO, Card.TWO, Card.THREE),
-					of(ID[0], ID[2], ID[1]),
-					of(ID[0], ID[1], ID[2])
-			},
-			{
-					of(PL[0],	PL[1],	PL[2]),
-					of(Card.TWO, Card.TWO, Card.ONE),
-					of(ID[0], ID[2], ID[1]),
-					of(ID[0], ID[1], ID[2])
-			}
-		}
-
-		);
+			{ of(new MoveState(PL[0], ID[0], Card.ONE), new MoveState(PL[1], ID[1], Card.TWO)), of(ID[0], ID[1]) },
+			{ of(new MoveState(PL[0], ID[0], Card.TWO), new MoveState(PL[1], ID[1], Card.ONE)), of(ID[1], ID[0]) },
+			{ of(new MoveState(PL[0], ID[0], Card.TWO), new MoveState(PL[1], ID[1], Card.TWO)), of(ID[0], ID[1]) },
+			{ of(new MoveState(PL[1], ID[1], Card.TWO), new MoveState(PL[0], ID[0], Card.TWO)), of(ID[1], ID[0]) },
+			{ of(
+					new MoveState(PL[0], ID[0], Card.TWO),
+					new MoveState(PL[1], ID[1], Card.TWO),
+					new MoveState(PL[2], ID[2], Card.THREE)
+			), of(ID[0], ID[1], ID[2]) },
+			{ of(
+					new MoveState(PL[0], ID[0], Card.TWO),
+					new MoveState(PL[1], ID[1], Card.TWO),
+					new MoveState(PL[2], ID[2], Card.ONE)
+			), of(ID[0], ID[1], ID[2]) }
+		});
 	}
-
-	private final List<GamePlayer> players;
-	private final List<Card> moveSelection;
-	private final List<RobotId> initial;
+	
+	private final List<MoveState> initialAndMoves;
 	private final List<RobotId> result;
 
-	public RoundResolverTest(List<GamePlayer> players, List<Card> moveSelection, List<RobotId> initial, List<RobotId> result) {
-		this.moveSelection = moveSelection;
-		this.players = players;
-		this.initial = initial;
+	public static class MoveState {
+		GamePlayer player;
+		RobotId id;
+		Card move;
+
+		public MoveState(GamePlayer player, RobotId id, Card move) {
+			this.player = player;
+			this.id = id;
+			this.move = move;
+		}
+	}
+
+	public RoundResolverTest(List<MoveState> initialAndMoves, List<RobotId> result) {
+		this.initialAndMoves = initialAndMoves;
 		this.result = result;
 	}
 
 	@Test
 	public void testSomeMethod() {
 		GameState initialState = new GameState.Builder()
-				.withRobots(initial.stream()
-						.map(r -> new Robot.Builder().id(r)
+				.withRobots(initialAndMoves.stream()
+						.map(r -> new Robot.Builder().id(r.id)
 								.remainingCards(Card.values())
 								.remainingLimbs(Limb.values())
 								.build()
@@ -74,23 +80,32 @@ public class RoundResolverTest {
 						.collect(Collectors.toList()))
 				.build();
 
-		for (int i = 0; i < players.size(); ++i) {
-			when(players.get(i).makeMove(any(RobotId.class), eq(initialState))).thenReturn(moveSelection.get(i));
+		for (MoveState s : initialAndMoves) {
+			when(s.player.makeMove(any(RobotId.class), eq(initialState))).thenReturn(s.move);
 		}
 
-		RoundResolver undertest = new RoundResolver(players.stream()
-				.collect(Collectors.toMap(e -> e, e -> forPlayer(e)))
+		RoundResolver undertest = new RoundResolver(initialAndMoves.stream()
+				.collect(Collectors.toMap(e -> e.player, e -> e.id))
 		);
 
 		GameState resultState = undertest.round(initialState);
 
 		List<RobotId> resultOrdering = resultState.getRobots().stream().map(Robot::getId).collect(Collectors.toList());
 		assertThat(resultOrdering, is(result));
+
+		List<Set<Card>> cardSets = resultState.getRobots().stream().map(Robot::getRemainingCards).collect(Collectors.toList());
+		for (int i = 0; i < result.size(); ++i) {
+			RobotId id = result.get(i);
+			MoveState state = forId(id);
+			final Set<Card> cards = cardSets.get(i);
+			final Card move = state.move;
+			assertFalse("expecting cards from player " + i + " to have the card " + move + " removed, set was: " + cards, cards.contains(move));
+		}
 	}
 
-	private static RobotId forPlayer(GamePlayer p) {
-		for (int i = 0; i < PL.length; ++i) {
-			if (PL[i] == p) return ID[i];
+	private MoveState forId(RobotId p) {
+		for (MoveState s :  initialAndMoves) {
+			if (s.id.equals(p)) return s;
 		}
 		throw new IllegalArgumentException();
 	}

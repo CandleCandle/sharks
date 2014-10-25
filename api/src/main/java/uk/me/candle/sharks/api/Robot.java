@@ -70,6 +70,11 @@ public class Robot {
 			return this;
 		}
 
+		public Builder removeCard(Card card) {
+			cards.remove(card);
+			return this;
+		}
+
 		public Builder remainingCards(Set<Card> cards) {
 			this.cards = Sets.newEnumSet(cards, Card.class);
 			return this;
