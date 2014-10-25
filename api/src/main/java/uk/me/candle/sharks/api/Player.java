@@ -2,6 +2,6 @@ package uk.me.candle.sharks.api;
 
 public interface Player {
 
-	void makeMove(GameState initialState, MoveMaker moveMaker);
+	void makeMove(Robot me, GameState initialState, MoveMaker moveMaker);
 
 }

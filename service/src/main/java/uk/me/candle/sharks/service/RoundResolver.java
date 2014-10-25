@@ -16,19 +16,19 @@ import uk.me.candle.sharks.api.RobotId;
 public class RoundResolver {
 
 
-	private final Map<Player, RobotId> playerRobots;
+	private final Map<GamePlayer, RobotId> playerRobots;
 
-	public RoundResolver(Map<Player, RobotId> playerRobots) {
+	public RoundResolver(Map<GamePlayer, RobotId> playerRobots) {
 		this.playerRobots = playerRobots;
 	}
 
 	GameState round(GameState initial) {
 
-		Map<Player, Card> moves = Maps.newHashMap();
+		Map<GamePlayer, Card> moves = Maps.newHashMap();
 		// collect moves from each player.
-		playerRobots.keySet().stream().forEach(player -> moves.put(player, player.makeMove(initial)));
+		playerRobots.entrySet().stream().forEach(player -> moves.put(player.getKey(), player.getKey().makeMove(player.getValue(), initial)));
 
-		Multimap<Card, Player> resolution = ArrayListMultimap.create();
+		Multimap<Card, GamePlayer> resolution = ArrayListMultimap.create();
 		moves.entrySet().stream().forEach(e -> resolution.put(e.getValue(), e.getKey()));
 
 		List<Card> sortedCards = Lists.newArrayList(Card.values());
@@ -39,7 +39,7 @@ public class RoundResolver {
 		// given the cards in order, smallest first, move the robots to the
 		//  end of the list IF they are the only robot that played that card.
 		for (Card card : sortedCards) {
-			Collection<Player> players = resolution.get(card);
+			Collection<GamePlayer> players = resolution.get(card);
 			if (players.size() == 1) {
 				RobotId playerRobotId = playerRobots.get(players.iterator().next());
 				int index = 0;

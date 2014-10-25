@@ -1,6 +1,6 @@
 package uk.me.candle.sharks.api;
 
-class InvalidMoveException extends Exception {
+public class InvalidMoveException extends Exception {
 	
 	private final Card failure;
 

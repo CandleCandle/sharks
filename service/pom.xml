@@ -16,6 +16,10 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sharks-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sharks-ai</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.guava</groupId>

@@ -10,6 +10,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.when;
 import uk.me.candle.sharks.api.Card;
@@ -22,7 +24,7 @@ import uk.me.candle.sharks.api.RobotId;
 public class RoundResolverTest {
 
 	private static final RobotId[] ID = new RobotId[]{new RobotId("a"), new RobotId("b"), new RobotId("c")};
-	private static final Player[] PL = new Player[]{Mockito.mock(Player.class), Mockito.mock(Player.class), Mockito.mock(Player.class)};
+	private static final GamePlayer[] PL = new GamePlayer[]{Mockito.mock(GamePlayer.class), Mockito.mock(GamePlayer.class), Mockito.mock(GamePlayer.class)};
 
 	@Parameterized.Parameters
 	public static Collection<Object[]> data() {
@@ -48,12 +50,12 @@ public class RoundResolverTest {
 		);
 	}
 
-	private final List<Player> players;
+	private final List<GamePlayer> players;
 	private final List<Card> moveSelection;
 	private final List<RobotId> initial;
 	private final List<RobotId> result;
 
-	public RoundResolverTest(List<Player> players, List<Card> moveSelection, List<RobotId> initial, List<RobotId> result) {
+	public RoundResolverTest(List<GamePlayer> players, List<Card> moveSelection, List<RobotId> initial, List<RobotId> result) {
 		this.moveSelection = moveSelection;
 		this.players = players;
 		this.initial = initial;
@@ -73,7 +75,7 @@ public class RoundResolverTest {
 				.build();
 
 		for (int i = 0; i < players.size(); ++i) {
-			when(players.get(i).makeMove(initialState)).thenReturn(moveSelection.get(i));
+			when(players.get(i).makeMove(any(RobotId.class), eq(initialState))).thenReturn(moveSelection.get(i));
 		}
 
 		RoundResolver undertest = new RoundResolver(players.stream()
@@ -86,7 +88,7 @@ public class RoundResolverTest {
 		assertThat(resultOrdering, is(result));
 	}
 
-	private static RobotId forPlayer(Player p) {
+	private static RobotId forPlayer(GamePlayer p) {
 		for (int i = 0; i < PL.length; ++i) {
 			if (PL[i] == p) return ID[i];
 		}

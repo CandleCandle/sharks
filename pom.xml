@@ -26,6 +26,11 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
+				<artifactId>sharks-ai</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
 				<artifactId>sharks-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
