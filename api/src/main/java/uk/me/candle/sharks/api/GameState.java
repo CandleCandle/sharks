@@ -28,6 +28,10 @@ public class GameState {
 			return this;
 		}
 
+		public Builder from(GameState from) {
+			return this; // TODO copy the parameter's fields into this builder.
+		}
+
 		public GameState build() {
 			return new GameState(robots);
 		}

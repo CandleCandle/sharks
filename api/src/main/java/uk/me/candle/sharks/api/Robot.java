@@ -45,8 +45,8 @@ public class Robot {
 
 		public Builder from(Robot robot) {
 			this.id = robot.getId();
-			this.cards = robot.getRemainingCards();
-			this.limbs = robot.getRemainingLimbs();
+			this.cards = Sets.newEnumSet(robot.getRemainingCards(), Card.class);
+			this.limbs = Sets.newEnumSet(robot.getRemainingLimbs(), Limbs.class);
 			return this;
 		}
 
@@ -56,7 +56,7 @@ public class Robot {
 		}
 
 		public Builder remainingLimbs(Set<Limbs> limbs) {
-			this.limbs = limbs;
+			this.limbs = Sets.newEnumSet(limbs, Limbs.class);
 			return this;
 		}
 		
@@ -65,9 +65,14 @@ public class Robot {
 			this.limbs.addAll(Arrays.asList(limbs));
 			return this;
 		}
+		
+		public Builder removeLimb(Limbs limb) {
+			limbs.remove(limb);
+			return this;
+		}
 
 		public Builder remainingCards(Set<Card> cards) {
-			this.cards = cards;
+			this.cards = Sets.newEnumSet(cards, Card.class);
 			return this;
 		}
 
@@ -80,5 +85,6 @@ public class Robot {
 		public Robot build() {
 			return new Robot(id, limbs, cards);
 		}
+
 	}
 }

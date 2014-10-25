@@ -1,7 +1,10 @@
 package uk.me.candle.sharks.service;
 
+import com.google.common.collect.Lists;
 import java.util.List;
+import java.util.stream.Collectors;
 import uk.me.candle.sharks.api.Card;
+import uk.me.candle.sharks.api.GameState;
 import uk.me.candle.sharks.api.Robot;
 import uk.me.candle.sharks.api.RobotId;
 
@@ -16,12 +19,32 @@ public class GameRunner {
 	}
 
 	Robot play() {
-		Robot robot = new Robot.Builder()
-				.id(robotIds.get(0))
-				.remainingCards(Card.values())
-				.remainingLimbs(Robot.Limbs.values())
-				.build();
-		return robot;
+		List<Robot> robots = robotIds.stream().map(
+			r -> new Robot.Builder()
+					.id(r)
+					.remainingLimbs(Robot.Limbs.values())
+					.remainingCards(Card.cardsFor(robotIds.size()))
+					.build()
+		).collect(Collectors.toList());
+				
+
+		GameState currentState = new GameState.Builder().withRobots(robots).build();
+		while (currentState.getRobots().size() > 1) {
+			GameState result = resolver.round(currentState);
+			List<Robot> resultingRobots = Lists.newLinkedList(result.getRobots());
+			Robot losingRobot = resultingRobots.remove(0);
+			losingRobot = new Robot.Builder()
+					.from(losingRobot)
+					.removeLimb(losingRobot.getRemainingLimbs().iterator().next())
+					.build();
+			if (!losingRobot.getRemainingLimbs().isEmpty()) {
+				resultingRobots.add(0, losingRobot);
+			}
+			 currentState = new GameState.Builder().from(currentState).withRobots(resultingRobots).build();
+		}
+		
+
+		return currentState.getRobots().get(0);
 	}
 
 }

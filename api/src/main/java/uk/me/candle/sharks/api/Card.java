@@ -1,6 +1,8 @@
 package uk.me.candle.sharks.api;
 
+import com.google.common.collect.Sets;
 import java.util.Comparator;
+import java.util.Set;
 
 public enum Card {
 	ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT;
@@ -12,5 +14,9 @@ public enum Card {
 				return o1.ordinal() - o2.ordinal();
 			}
 		}
+	}
+
+	public static Set<Card> cardsFor(int playerCount) {
+		return Sets.newHashSet(values());
 	}
 }
